@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct {
+    int *array;       
+    int front;       
+    int rear;        
+    int size;        
+    int capacity;    
+} Queue;
+
+
+Queue* createQueue(int capacity);
+void enqueue(Queue* q, int item);
+int dequeue(Queue* q);
+int peek(Queue* q);
+int isEmpty(Queue* q);
+int isFull(Queue* q);
+void displayQueue(Queue* q);
+void freeQueue(Queue* q);
+
+
+Queue* createQueue(int capacity) {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->capacity = capacity;
+    q->front = 0;
+    q->rear = 0;
+    q->size = 0;
+    q->array = (int*)malloc(capacity * sizeof(int));
+    return q;
+}
+
+
+void enqueue(Queue* q, int item) {
+    if (isFull(q)) {
+        printf("Queue is full\n");
+        return;
+    }
+    q->array[q->rear] = item;
+    q->rear = (q->rear + 1) % q->capacity;
+    q->size++;
+}
+
+
+int dequeue(Queue* q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
+        return -1;
+    }
+    int item = q->array[q->front];
+    q->front = (q->front + 1) % q->capacity;
+    q->size--;
+    return item;
+}
+
+
+int peek(Queue* q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
+        return -1; 
+    }
+    return q->array[q->front];
+}
+
+
+int isEmpty(Queue* q) {
+    return q->size == 0;
+}
+
+
+int isFull(Queue* q) {
+    return q->size == q->capacity;
+}
+
+
+void displayQueue(Queue* q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
+        return;
+    }
+    int i;
+    printf("Queue: ");
+    for (i = 0; i < q->size; i++) {
+        printf("%d ", q->array[(q->front + i) % q->capacity]);
+    }
+    printf("\n");
+}
+
+
+void freeQueue(Queue* q) {
+    free(q->array);
+    free(q);
+}
+
+
+int main() {
+    Queue* q = createQueue(5); 
+
+    enqueue(q, 10);
+    enqueue(q, 20);
+    enqueue(q, 30);
+
+    displayQueue(q);  
+    printf("Dequeued: %d\n", dequeue(q)); 
+    printf("Front item: %d\n", peek(q));   
+
+    enqueue(q, 40);
+    enqueue(q, 50);
+    enqueue(q, 60); 
+    displayQueue(q);  
+
+    freeQueue(q); 
+    return 0;
+}
+output:
+Queue: 10 20 30 
+Dequeued: 10
+Front item: 20
+Queue: 20 30 40 50 60 
